@@ -2,13 +2,16 @@ import React from 'react';
 import LazyLoad from 'react-lazyload';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { showModal } from '../redux/imageModal';
-
+import { setBgColor, showModal } from '../redux/imageModal';
+import { getAverageColorOfImage } from '../utils/getAverageColorOfImage';
 function PhotoItem({ photo: { urls, alt } }) {
   const dispatch = useDispatch();
 
-  const openModal = () => {
+  const openModal = e => {
     dispatch(showModal({ src: urls.full, alt }));
+    // 섬네일이미지로배경색계산후, 리덕스에저장
+    const averageColor = getAverageColorOfImage(e.target);
+    dispatch(setBgColor(averageColor));
   };
 
   return (

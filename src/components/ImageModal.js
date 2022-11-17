@@ -1,29 +1,28 @@
 import React from 'react';
-import styled from 'styled-components';
-import Modal from './Modal';
 import { useDispatch } from 'react-redux';
-import { hideModal, setBgColor } from '../redux/imageModal';
-import { getAverageColorOfImage } from '../utils/getAverageColorOfImage';
+import styled from 'styled-components';
+import { hideModal } from '../redux/imageModal';
+import Modal from './Modal';
 
 function ImageModal({ modalVisible, src, alt, bgColor }) {
   const dispatch = useDispatch();
-  const onLoadImage = e => {
-    const averageColor = getAverageColorOfImage(e.target);
-    dispatch(setBgColor(averageColor));
-  };
+  /*
+   * ImageModal 컴포넌트는 섬네일 이미지를 가져올 수 없음
+   * PhotoItem 컴포넌트에서 배경색을 계산하도록 수정함
+   */
+  // const onLoadImage = e => {
+  //   const averageColor = getAverageColorOfImage(e.target);
+  //   dispatch(setBgColor(averageColor));
+  // };
 
   const closeModal = () => {
     dispatch(hideModal());
   };
 
   return (
-    <Modal
-      modalVisible={modalVisible}
-      closeModal={closeModal}
-      bgColor={bgColor}
-    >
+    <Modal modalVisible={modalVisible} closeModal={closeModal} bgColor={bgColor}>
       <ImageWrap>
-        <FullImage crossOrigin="*" src={src} alt={alt} onLoad={onLoadImage} />
+        <FullImage crossOrigin="*" src={src} alt={alt} />
       </ImageWrap>
     </Modal>
   );
