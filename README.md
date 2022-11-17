@@ -220,3 +220,59 @@ npm install --save react-lazyload
   - 이미지 뿐만 아니라 일반 컴포넌트 포함
 - 이미지가 크면 뷰포트에 들어와도 로딩하는데 오래걸림
   - offset을 이용하여 미리 당겨올 수 있음
+
+### 리덕스 렌더링 최적화
+
+#### 리액트의 렌더링
+
+리액트는 렌더링 사이클을 갖습니다
+
+- 서비스의 상태가 변경되면 화면에 반영하기 위해 리렌더링 과정을 거칩니다.
+- 리렌더링은 메인스레드의 리소스를 차지하여 성능에 영향을 줍니다.
+- 성능에 영향을 주는 요소
+  - 렌더링 시간이 오래 걸리는 컴포넌트
+    - 오래걸리는 로직 존재
+  - 불필요한 렌더링
+
+#### React Developer Tools
+
+![React Developer Tools](public/paste/2022-11-17-22-56-06.png)
+
+- 이미지를 클릭해서 이미지 모달을 띄었는데, 모달 뿐만 아니라 헤더와 이미지 리스트 컴포넌트도 리렌더링 됨
+  - 모달을 띄우는 순간
+  - 모달의 이미지가 로드된 후 배경 색이 바뀌는 순간
+  - 모달을 닫는 순간
+
+##### 리렌더링의 원인
+
+###### 리덕스
+
+리덕스 안에 많은 상태들이 있음
+
+- useSelector를 이용하여 필요한 상태만 구독
+
+  - 새로운 객체를 만들어 리턴하면 새로운 참조 값을 반환하는 형태이므로 구독한 값이 변했다 판단
+
+###### 객체를 새로 만들지 않도록 반환 값 나누기
+
+각 값을 개별적으로 읽어오는 useSelector
+
+```js
+const modalVisible = useSelector(state => state.imageModal.modalVisible);
+const bgColor = useSelector(state => state.imageModal.bqColor);
+const src = useSelector(state => state.imageModal.src);
+const alt = useSelector(state => state.imageModal.alt);
+```
+
+H e a d e r 의 u s e S e l e c t o r 에 서 반 환 형태 수 정
+
+```js
+const category = useSelector(state => state.category.category);
+```
+
+###### Equality Function 사용
+
+useSelector의 옵션으로 넣는 함수
+리덕스 상태가 변했을 때, 이전 값과 비교할 수 있도록 해주는 함수
+
+**- 주의 : filter 같이 새 객체([]) 만드는 파생 상태의 경우, 상태 밖에서 수행**
